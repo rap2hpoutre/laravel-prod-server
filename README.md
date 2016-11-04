@@ -12,12 +12,57 @@ You want to deploy an application for:
 
 If so, let’s go, this is for you.
 
-```
-### Code
+## Recipe
 
+Let's say:
+
+- **raphael** is your name.
+- **nantes** is your hostname.
+- **myapp** is your app name.
+
+You will have to replace each occurrence of theses values in the code below.
+
+### Initialization
+
+Name your host
+
+```
+hostname nantes
+```
+
+Install what you need
+
+```sh
 apt update
 apt upgrade
 apt install php php-mbstring php-xml php-zip git nginx redis-server postgresql fail2ban htop
+```
+
+### Install composer
+```
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php composer-setup.php
+php -r "unlink('composer-setup.php');"
+mv composer.phar /usr/local/bin/composer
+```
+
+### Install postgres
+
+Create the user (don't forget to use your own password):
+```
+sudo -u postgres psql -c "CREATE ROLE myapp LOGIN UNENCRYPTED PASSWORD 'xxxxx' SUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION;"
+```
+Note the password, you will need it later. Then create the database:
+```
+service postgresql restart
+sudo -u postgres /usr/bin/createdb --echo --owner=xxx xxx
+```
+
+
+```
+### Code
+
+
 hostname yourhostname
 # COMPOSER
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
