@@ -1,6 +1,4 @@
-## Install and run a production server for your Laravel application
-
-### Pre-requisites
+# Install and run a production server for a Laravel application
 
 You already own:
 - A domain name
