@@ -263,7 +263,7 @@ Restart nginx
 sudo service nginx start
 ```
 
-** Your website is ready. Go to https://your.domain.com and it works. **
+**Your website is ready. Go to https://your.domain.com and it works.**
 
 ## Delivery
 
