@@ -25,12 +25,12 @@ You will have to replace each occurrence of theses values in the code below.
 ### Initialization
 
 Connect to your server with root user. Then, name your host
-```
+```bash
 hostname nantes
 ```
 
 Install packages (PHP7, Nginx, PostgreSQL, etc.)
-```sh
+```bash
 apt update
 apt upgrade
 apt install php php-mbstring php-xml php-zip git nginx redis-server postgresql fail2ban htop
@@ -38,7 +38,7 @@ apt install php php-mbstring php-xml php-zip git nginx redis-server postgresql f
 You can go to your server IP with your browser, you should see a welcome message from Nginx
 
 ### Composer
-```
+```bash
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 php composer-setup.php
 php -r "unlink('composer-setup.php');"
@@ -48,17 +48,17 @@ mv composer.phar /usr/local/bin/composer
 ### PostgreSQL
 
 Create the user (don't forget to use your own password):
-```
+```bash
 sudo -u postgres psql -c "CREATE ROLE myapp LOGIN UNENCRYPTED PASSWORD 'xxxxx' SUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION;"
 ```
 Write down the password, you will need it later. Then restart service and create the database:
-```
+```bash
 service postgresql restart
 sudo -u postgres /usr/bin/createdb --echo --owner=xxx xxx
 ```
 ### Firewall
 Configure and enable ufw
-```
+```bash
 ufw allow 443
 ufw allow 80
 ufw allow 22
@@ -66,7 +66,7 @@ ufw enable
 ```
 ### Application user
 You need to create an application user. It's not your name. Replace **myapp** everywhere with the name of your application.
-```
+```bash
 useradd myapp
 mkdir -p /home/myapp
 chsh -s /bin/bash myapp
@@ -77,23 +77,23 @@ Optional step: Copy your public key, located in `/home/myapp/.ssh/id_rsa.pub`, t
 
 ### Deployer
 Deployer is a small tool for initializing and deploying Laravel applications. Install it.
-```
+```bash
 cd /home/myapp
 wget https://github.com/yepform/deployer/releases/download/v0.1.0/deployer-x86_64-unknown-linux-gnu
 chmod +x deployer-x86_64-unknown-linux-gnu
 mv deployer-x86_64-unknown-linux-gnu /usr/local/bin/deployer
 ```
 Init your app with deployer (replace `https://github.com/your/app.git` with the URL to your git repo).
-```
+```bash
 sudo -u myapp HOME=/home/myapp deployer init www https://github.com/your/app.git
 ```
 ### Laravel
 Copy `.env.example` to `.env`
-```
+```bash
 sudo -u yepform cp /home/myapp/www/current/.env.example  /home/myapp/www/current/.env
 ```
 Edit `/home/myapp/www/current/.env`
-```
+```bash
 vi /home/myapp/www/current/.env
 ```
 Change the values of `DB_*` with your credentials.
@@ -114,27 +114,27 @@ SESSION_DRIVER=redis
 QUEUE_DRIVER=redis
 ```
 Generate the laravel key:
-```
+```bash
 cd /home/myapp/www/current
 sudo -u myapp php artisan key:generate
 ```
 Run your first migration
-```
+```bash
 sudo -u myapp php artisan migrate --force
 ```
 Authorize `www-data` to write in storage:
-```
+```bash
 chown -R www-data:www-data /home/myapp/www/shared/storage
 ```
 
 ### Nginx
 Edit `/etc/nginx/fastcgi.conf` and replace `SCRIPT_FILENAME` and `DOCUMENT_ROOT` with:
-```
+```nginx
 fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
 fastcgi_param DOCUMENT_ROOT $realpath_root;
 ```
 Then create and edit `/etc/nginx/sites-available/myapp`
-```
+```nginx
 server {
     listen 80 default_server;
     server_name _;
@@ -162,18 +162,21 @@ server {
 }
 ```
 Disable default Nginx site and enable your myapp site:
-```
+```bash
 rm /etc/nginx/sites-enabled/default
 ln -s /etc/nginx/sites-available/myapp /etc/nginx/sites-enabled/myapp
 ```
 Reload nginx
-```
+```bash
 service nginx reload
 ```
+
+You should be able to connect to your website with the IP adress.
+
 ### Your user
 
 Create and configure your user (type a password when prompted)
-```
+```bash
 useradd raphael
 adduser raphael sudo
 chsh -s /bin/bash raphael
@@ -183,49 +186,78 @@ cp /root/.profile /home/raphael/.profile
 cp /root/.bashrc /home/raphael/.bashrc
 passwd raphael
 ```
-Go to your 
-```
-# Your User
-useradd raphael
-adduser raphael sudo
-chsh -s /bin/bash raphael
-mkdir /home/raphael
-chown -R raphael:raphael /home/raphael
-cp /root/.profile /home/raphael/.profile
-cp /root/.bashrc /home/raphael/.bashrc
-passwd raphael
-# ON THE HOST
+Go to your computer (not your server) to authorize your SSH key (replace `ADDRESS` with your address and `raphael` with your name)
+```bash
 ssh-copy-id raphael@ADDRESS
-ssh raphael@ADDRESS # pour essayer
-# Maintenant tout le reste sera fait avec le USER
-# Désactivation ssh
-sudo vi /etc/ssh/sshd_config
+```
+Test if connection works (you should not be prompted for password)
+```bash
+ssh raphael@ADDRESS
+```
+Now you should be connected with your account. Good bye `root`, we will not use it anymore.
+
+### Disable password auth
+Edit `/etc/ssh/sshd_config` and add this
+```
 PasswordAuthentication no
 sudo service ssh restart
-# let's encrypt
+```
+
+### Https
+Everything is https now, here is how to have one for your domain (replace `your.domain.com`)
+```
 sudo apt install letsencrypt
 sudo service nginx stop
-sudo letsencrypt certonly --standalone -d app.yepform.com
-# editer le fichier nginx et ajouter les clés et le 443
-/etc/letsencrypt/live/app.yepform.com/fullchain.pem
-listen 443 ssl;
-ssl_certificate /etc/letsencrypt/live/cw.yepform.com/fullchain.pem;
-ssl_certificate_key /etc/letsencrypt/live/cw.yepform.com/privkey.pem;
+sudo letsencrypt certonly --standalone -d your.domain.com
+```
+
+Edit `/etc/nginx/sites-available/myapp` and change the first lines
+```nginx
+server {
+    listen 443 ssl;;
+    ssl_certificate /etc/letsencrypt/live/cw.yepform.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/cw.yepform.com/privkey.pem;
+    server_name _;
+    // Keep everything after ...
+```
+
+Enable automatic renew of the certificate
+
+```bash
 sudo letsencrypt renew --dry-run --agree-tos
 sudo service nginx start
-# renew
-0 4 * * 0,3 root /home/raphael/renew.sh
-vi /home/raphael/renew.sh
----
+```
+Edit `/home/raphael/renew.sh`
+```
 #!/bin/bash
 service nginx stop
 letsencrypt renew
 service nginx start
----
-
-
-sudo service nginx start
-#next steps
-sudo -u yepform HOME=/home/yepform deployer deploy /home/yepform/www https://github.com/yepform/app.git # deployer le programme
-
 ```
+
+Edit `/etc/crontab` and add this
+```
+0 4 * * 0,3 root /home/raphael/renew.sh
+```
+
+Restart nginx
+```
+sudo service nginx start
+```
+
+** Your website is ready. Go to https://your.domain.com and it works. **
+
+## Delivery
+
+### Deploy
+Every time you want to deploy a new version (update your website), just run:
+```bash
+sudo -u myapp HOME=/home/myapp deployer deploy /home/myapp/www https://github.com/your/app.git
+```
+### Rollback
+If you want to rollback (previous version)
+```bash
+sudo -u myapp HOME=/home/myapp deployer rollback
+```
+### Setup continuous delivery (optional step)
+TODO!
