@@ -22,6 +22,12 @@ Let's say:
 
 You will have to replace each occurrence of theses values in the code below.
 
+### Table of contents
+## Table of Contents
+
+- [Initialization](#initialization)
+- [Composer](#composer)
+
 ### Initialization
 
 Connect to your server with root user. Then, name your host
