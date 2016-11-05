@@ -24,21 +24,19 @@ You will have to replace each occurrence of theses values in the code below.
 
 ### Initialization
 
-Name your host
-
+Connect to your server with root user. Then, name your host
 ```
 hostname nantes
 ```
 
-Install what you need
-
+Install packages (PHP7, Nginx, PostgreSQL, etc.)
 ```sh
 apt update
 apt upgrade
 apt install php php-mbstring php-xml php-zip git nginx redis-server postgresql fail2ban htop
 ```
 
-### Install composer
+### Composer
 ```
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 php composer-setup.php
@@ -46,52 +44,51 @@ php -r "unlink('composer-setup.php');"
 mv composer.phar /usr/local/bin/composer
 ```
 
-### Install postgres
+### PostgreSQL
 
 Create the user (don't forget to use your own password):
 ```
 sudo -u postgres psql -c "CREATE ROLE myapp LOGIN UNENCRYPTED PASSWORD 'xxxxx' SUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION;"
 ```
-Note the password, you will need it later. Then create the database:
+Write down the password, you will need it later. Then restart service and create the database:
 ```
 service postgresql restart
 sudo -u postgres /usr/bin/createdb --echo --owner=xxx xxx
 ```
-
-
+### Firewall
+Configure and enable ufw
 ```
-### Code
-
-
-hostname yourhostname
-# COMPOSER
-php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-php composer-setup.php
-php -r "unlink('composer-setup.php');"
-mv composer.phar /usr/local/bin/composer
-# POSTGRES
-sudo -u postgres psql -c "CREATE ROLE xxxxx LOGIN UNENCRYPTED PASSWORD 'xxxxx' SUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION;"
-# BIEN NOTER LE MOT DE PASSE
-service postgresql restart
-sudo -u postgres /usr/bin/createdb --echo --owner=xxx xxx
-# FIREWALL
-ufw allow 22
-ufw allow 80
 ufw allow 443
+ufw allow 80
+ufw allow 22
 ufw enable
-# APP USER
-useradd xxx
-mkdir -p /home/xxx
-chsh -s /bin/bash xxx
-chown -R xxx:xxx /home/xxx
-sudo -u xxx ssh-keygen -t rsa -b 4096 -C "xxx"
-# side: add key to github account
-# Deployer
-cd /home/xxx
+```
+### Application user
+You need to create an application user. It's not your name. Replace **myapp** everywhere with the name of your application.
+```
+useradd myapp
+mkdir -p /home/myapp
+chsh -s /bin/bash myapp
+chown -R myapp:myapp /home/myapp
+sudo -u myapp ssh-keygen -t rsa -b 4096 -C "myapp"
+```
+Optional step: Copy your public key, located in `/home/myapp/.ssh/id_rsa.pub`, to your github account or repository (only if the repository is private). It will be required to make continuous delivery work.
+
+### Deployer
+Deployer is a small tool for initializing and deploying Laravel applications. Install it.
+```
+cd /home/myapp
 wget https://github.com/yepform/deployer/releases/download/v0.1.0/deployer-x86_64-unknown-linux-gnu
 chmod +x deployer-x86_64-unknown-linux-gnu
 mv deployer-x86_64-unknown-linux-gnu /usr/local/bin/deployer
-sudo -u xxx HOME=/home/xxx deployer init www https://github.com/your/app.git
+```
+Init your app with deployer (replace `https://github.com/your/app.git` with the URL to your git repo).
+```
+sudo -u myapp HOME=/home/myapp deployer init www https://github.com/your/app.git
+```
+
+```
+### Code
 # Laravel
 sudo -u yepform cp www/current/.env.example  www/current/.env
 vi www/current/.env
