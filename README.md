@@ -35,6 +35,7 @@ apt update
 apt upgrade
 apt install php php-mbstring php-xml php-zip git nginx redis-server postgresql fail2ban htop
 ```
+You can go to your server IP with your browser, you should see a welcome message from Nginx
 
 ### Composer
 ```
@@ -72,7 +73,7 @@ chsh -s /bin/bash myapp
 chown -R myapp:myapp /home/myapp
 sudo -u myapp ssh-keygen -t rsa -b 4096 -C "myapp"
 ```
-Optional step: Copy your public key, located in `/home/myapp/.ssh/id_rsa.pub`, to your github account or repository (only if the repository is private). It will be required to make continuous delivery work.
+Optional step: Copy your public key, located in `/home/myapp/.ssh/id_rsa.pub`, to your github account or repository (only if the repository is private). It will be required to make continuous delivery work without connecting to your server.
 
 ### Deployer
 Deployer is a small tool for initializing and deploying Laravel applications. Install it.
@@ -86,25 +87,104 @@ Init your app with deployer (replace `https://github.com/your/app.git` with the 
 ```
 sudo -u myapp HOME=/home/myapp deployer init www https://github.com/your/app.git
 ```
-
+### Laravel
+Copy `.env.example` to `.env`
 ```
-### Code
-# Laravel
-sudo -u yepform cp www/current/.env.example  www/current/.env
-vi www/current/.env
-# changer les valeurs pour production et postgresql et redis
-cd www/current
-sudo -u yepform php artisan key:generate
-sudo -u yepform php artisan migrate --force
-chown -R www-data:www-data home/yepform/www/shared/storage
-# Nginx
-# Same step as the other article
-# mais juste avant : Symlink !!
-vi /etc/nginx/fastcgi.conf
+sudo -u yepform cp /home/myapp/www/current/.env.example  /home/myapp/www/current/.env
+```
+Edit `/home/myapp/www/current/.env`
+```
+vi /home/myapp/www/current/.env
+```
+Change the values of `DB_*` with your credentials.
+```
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=myapp
+DB_USERNAME=myapp
+DB_PASSWORD=xxxxx
+```
+Change `APP_ENV=local` to `APP_ENV=production` (you could disable debug too).
+
+Use redis for everything if you want (but don't forget to include `predis/predis` to your laravel project in that case)
+```
+CACHE_DRIVER=redis
+SESSION_DRIVER=redis
+QUEUE_DRIVER=redis
+```
+Generate the laravel key:
+```
+cd /home/myapp/www/current
+sudo -u myapp php artisan key:generate
+```
+Run your first migration
+```
+sudo -u myapp php artisan migrate --force
+```
+Authorize `www-data` to write in storage:
+```
+chown -R www-data:www-data /home/myapp/www/shared/storage
+```
+
+### Nginx
+Edit `/etc/nginx/fastcgi.conf` and replace `SCRIPT_FILENAME` and `DOCUMENT_ROOT` with:
+```
 fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
 fastcgi_param DOCUMENT_ROOT $realpath_root;
+```
+Then create and edit `/etc/nginx/sites-available/myapp`
+```
+server {
+    listen 80 default_server;
+    server_name _;
+    root /home/myapp/www/current/public;
+    server_tokens off;
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    index index.html index.htm index.php;
+    charset utf-8;
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+    error_log  /var/log/nginx/hello-error.log error;
+    error_page 404 /index.php;
+    location ~ \.php$ {
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
+        fastcgi_index index.php;
+        include fastcgi.conf;
+    }
+    location ~ /\.ht {
+        deny all;
+    }
+}
+```
+Disable default Nginx site and enable your myapp site:
+```
+rm /etc/nginx/sites-enabled/default
+ln -s /etc/nginx/sites-available/myapp /etc/nginx/sites-enabled/myapp
+```
+Reload nginx
+```
+service nginx reload
+```
+### Your user
 
-
+Create and configure your user (type a password when prompted)
+```
+useradd raphael
+adduser raphael sudo
+chsh -s /bin/bash raphael
+mkdir /home/raphael
+chown -R raphael:raphael /home/raphael
+cp /root/.profile /home/raphael/.profile
+cp /root/.bashrc /home/raphael/.bashrc
+passwd raphael
+```
+Go to your 
+```
 # Your User
 useradd raphael
 adduser raphael sudo
