@@ -22,11 +22,18 @@ Let's say:
 
 You will have to replace each occurrence of theses values in the code below.
 
-### Table of contents
-## Table of Contents
+This recipe has 10 steps, it may take half an hour to make it.
 
-- [Initialization](#initialization)
-- [Composer](#composer)
+1. [Initialization](#initialization)
+2. [Composer](#composer)
+3. [PostgreSQL](#postgresql)
+4. [Firewall](#firewall)
+5. [Application user](application-user)
+6. [Laravel](#laravel)
+7. [Nginx](#nginx)
+8. [Your user](#your-user)
+9. [Disable password auth](#disable-password-auth)
+10. [Https](#https)
 
 ### Initialization
 
@@ -238,7 +245,7 @@ sudo letsencrypt renew --dry-run --agree-tos
 sudo service nginx start
 ```
 Edit `/home/raphael/renew.sh`
-```
+```bash
 #!/bin/bash
 service nginx stop
 letsencrypt renew
@@ -251,7 +258,7 @@ Edit `/etc/crontab` and add this
 ```
 
 Restart nginx
-```
+```bash
 sudo service nginx start
 ```
 
