@@ -47,11 +47,15 @@ mv composer.phar /usr/local/bin/composer
 
 ### PostgreSQL
 
-Create the user (don't forget to use your own password):
+Run `psql`:
 ```bash
-sudo -u postgres psql -c "CREATE ROLE myapp LOGIN UNENCRYPTED PASSWORD 'xxxxx' SUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION;"
+sudo -u postgres psql
 ```
-Write down the password, you will need it later. Then restart service and create the database:
+Create the user (don't forget to use your own password):
+```sql
+CREATE ROLE myapp LOGIN UNENCRYPTED PASSWORD 'xxxxx' SUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION;
+```
+Write down the password, you will need it later. Disconnect from `psql` with `\q`. Then restart service and create the database:
 ```bash
 service postgresql restart
 sudo -u postgres /usr/bin/createdb --echo --owner=xxx xxx
