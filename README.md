@@ -235,7 +235,8 @@ server {
     ssl_certificate /etc/letsencrypt/live/cw.yepform.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/cw.yepform.com/privkey.pem;
     server_name _;
-    // Keep everything after ...
+    # ...
+}
 ```
 
 Enable automatic renew of the certificate
