@@ -92,13 +92,13 @@ sudo -u myapp ssh-keygen -t rsa -b 4096 -C "myapp"
 ```
 Optional step: Copy your public key, located in `/home/myapp/.ssh/id_rsa.pub`, to your github account or repository (only if the repository is private). It will be required to make continuous delivery work without connecting to your server.
 
-### Deployer
-Deployer is a small tool for initializing and deploying Laravel applications. Install it.
+### Facteur
+Facteur is a small tool for initializing and deploying Laravel applications. Install it.
 ```bash
 cd /home/myapp
-wget https://github.com/yepform/deployer/releases/download/v0.1.0/deployer-x86_64-unknown-linux-gnu
+wget https://github.com/rap2hpoutre/facteur/releases/download/v0.1.0/facteur-x86_64-unknown-linux-gnu
 chmod +x deployer-x86_64-unknown-linux-gnu
-mv deployer-x86_64-unknown-linux-gnu /usr/local/bin/deployer
+mv facteur-x86_64-unknown-linux-gnu /usr/local/bin/deployer
 ```
 Init your app with deployer (replace `https://github.com/your/app.git` with the URL to your git repo).
 ```bash
