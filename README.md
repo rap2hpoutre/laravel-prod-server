@@ -108,7 +108,7 @@ sudo -u myapp HOME=/home/myapp facteur init www https://github.com/your/app.git
 ### Laravel
 Copy `.env.example` to `.env`
 ```bash
-sudo -u yepform cp /home/myapp/www/current/.env.example  /home/myapp/www/current/.env
+sudo -u myapp cp /home/myapp/www/current/.env.example  /home/myapp/www/current/.env
 ```
 Edit `/home/myapp/www/current/.env`
 ```bash
