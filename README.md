@@ -72,7 +72,7 @@ CREATE ROLE myapp LOGIN UNENCRYPTED PASSWORD 'xxxxx' SUPERUSER INHERIT NOCREATED
 Write down the password, you will need it later. Disconnect from `psql` with `\q`. Then restart service and create the database:
 ```bash
 service postgresql restart
-sudo -u postgres /usr/bin/createdb --echo --owner=xxx xxx
+sudo -u postgres /usr/bin/createdb --echo --owner=myapp myapp
 ```
 ### Firewall
 Configure and enable ufw
