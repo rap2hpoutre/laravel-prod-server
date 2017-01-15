@@ -232,7 +232,7 @@ sudo letsencrypt certonly --standalone -d your.domain.com
 Edit `/etc/nginx/sites-available/myapp` and change the first lines
 ```nginx
 server {
-    listen 443 ssl;;
+    listen 443 ssl;
     ssl_certificate /etc/letsencrypt/live/your.domain.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/your.domain.com/privkey.pem;
     server_name _;
