@@ -22,7 +22,7 @@ Let's say:
 
 You will have to replace each occurrence of theses values in the code below.
 
-This recipe has 10 steps, it may take half an hour to make it.
+This recipe has 11 steps, it may take half an hour to make it.
 
 1. [Initialization](#initialization)
 2. [Composer](#composer)
@@ -30,11 +30,11 @@ This recipe has 10 steps, it may take half an hour to make it.
 4. [Firewall](#firewall)
 5. [Application user](application-user)
 6. [Facteur](#facteur)
-6. [Laravel](#laravel)
-7. [Nginx](#nginx)
-8. [Your user](#your-user)
-9. [Disable password auth](#disable-password-auth)
-10. [Https](#https)
+7. [Laravel](#laravel)
+8. [Nginx](#nginx)
+9. [Your user](#your-user)
+10. [Disable password auth](#disable-password-auth)
+11. [Https](#https)
 
 ### Initialization
 
