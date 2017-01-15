@@ -47,7 +47,7 @@ Install packages (PHP7, Nginx, PostgreSQL, etc.)
 ```bash
 apt update
 apt upgrade
-apt install php php-mbstring php-xml php-zip git nginx redis-server postgresql fail2ban htop
+apt install php php-mbstring php-xml php-zip git nginx redis-server postgresql fail2ban htop php-pgsql
 ```
 You can go to your server IP with your browser, you should see a welcome message from Nginx
 
