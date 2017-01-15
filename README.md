@@ -29,6 +29,7 @@ This recipe has 10 steps, it may take half an hour to make it.
 3. [PostgreSQL](#postgresql)
 4. [Firewall](#firewall)
 5. [Application user](application-user)
+6. [Facteur](#facteur)
 6. [Laravel](#laravel)
 7. [Nginx](#nginx)
 8. [Your user](#your-user)
@@ -97,12 +98,12 @@ Facteur is a small tool for initializing and deploying Laravel applications. Ins
 ```bash
 cd /home/myapp
 wget https://github.com/rap2hpoutre/facteur/releases/download/v0.1.0/facteur-x86_64-unknown-linux-gnu
-chmod +x deployer-x86_64-unknown-linux-gnu
-mv facteur-x86_64-unknown-linux-gnu /usr/local/bin/deployer
+chmod +x facteur-x86_64-unknown-linux-gnu
+mv facteur-x86_64-unknown-linux-gnu /usr/local/bin/facteur
 ```
 Init your app with deployer (replace `https://github.com/your/app.git` with the URL to your git repo).
 ```bash
-sudo -u myapp HOME=/home/myapp deployer init www https://github.com/your/app.git
+sudo -u myapp HOME=/home/myapp facteur init www https://github.com/your/app.git
 ```
 ### Laravel
 Copy `.env.example` to `.env`
@@ -265,17 +266,5 @@ sudo service nginx start
 
 **Your website is ready. Go to https://your.domain.com and it works.**
 
-## Delivery
-
-### Deploy
-Every time you want to deploy a new version (update your website), just run:
-```bash
-sudo -u myapp HOME=/home/myapp deployer deploy /home/myapp/www https://github.com/your/app.git
-```
-### Rollback
-If you want to rollback (previous version)
-```bash
-sudo -u myapp HOME=/home/myapp deployer rollback
-```
-### Setup continuous delivery (optional step)
-TODO!
+## Next steps?
+ - [Delivery](delivery.md)
