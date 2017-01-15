@@ -97,9 +97,9 @@ Optional step: Copy your public key, located in `/home/myapp/.ssh/id_rsa.pub`, t
 Facteur is a small tool for initializing and deploying Laravel applications. Install it.
 ```bash
 cd /home/myapp
-wget https://github.com/rap2hpoutre/facteur/releases/download/v0.1.0/facteur-x86_64-unknown-linux-gnu
-chmod +x facteur-x86_64-unknown-linux-gnu
-mv facteur-x86_64-unknown-linux-gnu /usr/local/bin/facteur
+wget https://github.com/rap2hpoutre/facteur/releases/download/v0.1.0/facteur
+chmod +x facteur
+mv facteur /usr/local/bin/facteur
 ```
 Init your app with deployer (replace `https://github.com/your/app.git` with the URL to your git repo).
 ```bash
