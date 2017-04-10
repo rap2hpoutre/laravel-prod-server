@@ -218,6 +218,9 @@ Now you should be connected with your account. Good bye `root`, we will not use 
 Edit `/etc/ssh/sshd_config` and add this
 ```
 PasswordAuthentication no
+```
+Then run
+```
 sudo service ssh restart
 ```
 
